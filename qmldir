@@ -1,0 +1,7 @@
+singleton CaptureStatus 1.0 CaptureStatus.qml
+Capture 1.0 Capture.qml
+Keystrokes 1.0 Keystrokes.qml
+Panel 1.0 Panel.qml
+OverlayWindow 1.0 OverlayWindow.qml
+SettingsFile 1.0 SettingsFile.qml
+StrokeModel 1.0 StrokeModel.qml

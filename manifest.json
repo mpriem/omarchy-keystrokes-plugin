@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "markpriem.keystrokes",
+  "name": "Keystrokes",
+  "version": "1.3.0",
+  "author": "markpriem",
+  "license": "MIT",
+  "description": "Shows the keys you press as themed keycaps on screen, for screencasts, streams and teaching. Toggle it from the menu, a keybinding or IPC.",
+  "kinds": ["panel", "bar-widget"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Keystrokes.qml",
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": { "displayName": "Keystrokes" }
+}
