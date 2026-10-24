@@ -16,7 +16,10 @@ ShellRoot {
       Capture {
         id: capture
         config: ({sudoProtection: true, combosOnly: true, modifiersAlone: false, hideFor: [], autoOffMinutes: 0})
-        onReadyChanged: if (ready) setEnabled(true)
+        onReadyChanged: if (ready) {
+          if (root.mode === "spawn-retry") run("binding", ["/nonexistent-keystrokes-test-command"])
+          else setEnabled(true)
+        }
         onPhaseChanged: Qt.callLater(function() {
           if (root.acted) return
           if (root.mode === "destroy-create" && phase === "creating") {
@@ -59,6 +62,11 @@ ShellRoot {
     onTriggered: {
       if (root.destroyed) { console.log("PASS: QML destruction launches ordered cleanup"); Qt.quit(); return }
       var c = loader.item
+      if (root.mode === "spawn-retry" && !root.acted && c && c.ready && !c.busy) {
+        root.acted = true
+        c.setEnabled(true)
+        return
+      }
       if (c && c.cleanupBlocked && root.mode === "cleanup-fail" && !root.acted) {
         if (c.enabled || c.requested || !c.directory || !c.token || c.cleanupAttempts !== 3) throw new Error("cleanup ownership lost")
         root.acted = true
@@ -67,6 +75,8 @@ ShellRoot {
       }
       if (!c || !c.ready || c.busy || c.directory || c.requested) return
       if (root.mode === "ack-fail" && (!c.error || root.strokes !== 0)) throw new Error("ACK failure did not stop capture")
+      if (root.mode === "spawn-fail" && (!c.error || root.strokes !== 0)) throw new Error("spawn failure did not settle safely")
+      if (root.mode === "spawn-retry" && (!root.acted || root.strokes === 0 || c.error)) throw new Error("capture did not recover after a failed launch")
       if (root.mode === "start-timeout" && !c.error) throw new Error("timeout lost")
       if (["stop-fail", "stop-timeout"].indexOf(root.mode) >= 0 && (!c.error || c.stopAcknowledged)) throw new Error("stop failure lost")
       if (["cancel-create", "cancel-start", "start-timeout"].indexOf(root.mode) >= 0 && root.strokes !== 0) throw new Error("cancelled startup delivered input")

@@ -238,6 +238,15 @@ Item {
     stdout: StdioCollector { id: output; waitForEnd: true }
     stderr: StdioCollector {}
     onExited: function(exitCode) { root.finished(operationId, exitCode, output.text) }
+    onRunningChanged: if (!running) {
+      var id = operationId
+      // FailedToStart has no exited signal. Let a normal exit finish first;
+      // a failed launch must still release its operation and allow retries.
+      Qt.callLater(function() {
+        if (!rpc.running && root.operation && root.operation.id === id)
+          root.finished(id, -1, "")
+      })
+    }
   }
   Timer {
     id: deadline
