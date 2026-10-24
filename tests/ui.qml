@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import "." as Plugin
 import qs.Ui as Ui
+import qs.Commons as Commons
 ShellRoot {
   id: root
   Plugin.Keystrokes { id: overlay }
@@ -30,8 +31,6 @@ ShellRoot {
       history.ingest({code:38,mods:1})
       history.ingest({code:38,mods:1})
       if (history.count !== 1 || history.rows[0].count !== 2) throw new Error("history presentation failed")
-      history.clear()
-      if (history.count !== 0) throw new Error("privacy clear failed")
       panel.setCursor("monitor", 999)
       if (panel.selectedIndex !== panel.monitorOptions.length - 1) throw new Error("monitor navigation out of range")
       panel.setCursor("monitor", 0)
@@ -47,6 +46,26 @@ ShellRoot {
         root.fixture.captureState = {enabled:true,requested:true,pauseReason:"",error:"",shortcut:"Super+Shift+K"}
         if (!panel.enabled || !third.enabled) throw new Error("active state not shared")
       }
+    }
+  }
+  function findText(item, text) {
+    if (item.text === text) return item
+    var children = item.children || []
+    for (var i = 0; i < children.length; i++) {
+      var found = findText(children[i], text)
+      if (found) return found
+    }
+    return null
+  }
+  Timer {
+    interval: 400; running: true
+    onTriggered: {
+      // Exercise instantiated keycaps, not only component loading. Qt 6.12
+      // exports QtQuick.Color, which must not replace the Omarchy palette.
+      var cap = root.findText(view.contentItem, "Ctrl")
+      if (!cap || !Qt.colorEqual(cap.color, Commons.Color.popups.text)) throw new Error("keycap theme color missing")
+      history.clear()
+      if (history.count !== 0) throw new Error("privacy clear failed")
     }
   }
   Timer {

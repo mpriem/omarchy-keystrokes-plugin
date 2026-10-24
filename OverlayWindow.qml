@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.Commons
+import qs.Commons as Commons
 import qs.Ui
 import "Config.js" as Config
 import "KeyLabels.js" as Labels
@@ -63,8 +64,8 @@ PanelWindow {
         width: Math.min(pauseRow.width, pauseLabel.implicitWidth + Style.space(14) * panel.scale
           + borderLeft + borderRight + pauseRow.pad * 2)
         height: borderTop + borderBottom + pauseRow.pad * 2 + pauseCap.height
-        color: Util.alpha(Color.popups.background, 0.92)
-        borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
+        color: Util.alpha(Commons.Color.popups.background, 0.92)
+        borderSpec: Border.surfaceSpec("popups", "border", Commons.Color.popups.border, Math.max(1, Style.space(2)))
         radius: Style.cornerRadius
         Rectangle {
           id: pauseCap
@@ -72,15 +73,15 @@ PanelWindow {
           width: parent.width - parent.borderLeft - parent.borderRight - pauseRow.pad * 2
           height: Math.max(Math.round(Style.space(30) * panel.scale), pauseLabel.implicitHeight + Style.space(14) * panel.scale)
           radius: Math.min(Style.cornerRadius, Style.space(6))
-          color: Util.alpha(Color.popups.text, resumeArea.containsMouse ? 0.22 : 0.16)
+          color: Util.alpha(Commons.Color.popups.text, resumeArea.containsMouse ? 0.22 : 0.16)
           border.width: 1
-          border.color: Util.alpha(Color.popups.text, 0.45)
+          border.color: Util.alpha(Commons.Color.popups.text, 0.45)
           Rectangle {
             anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
             anchors.margins: 1
             height: Style.space(3)
             radius: parent.radius
-            color: Util.alpha(Color.popups.text, 0.25)
+            color: Util.alpha(Commons.Color.popups.text, 0.25)
           }
           Text {
             id: pauseLabel
@@ -91,7 +92,7 @@ PanelWindow {
             text: panel.pauseText
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
-            color: Color.popups.text
+            color: Commons.Color.popups.text
             font.family: Style.font.family
             font.pixelSize: Math.round(Style.font.title * panel.scale)
             font.bold: true
@@ -127,8 +128,8 @@ PanelWindow {
           x: panel.atRight ? row.width - width : panel.atLeft ? 0 : Math.round((row.width - width) / 2)
           width: card.borderLeft + row.pad + line.implicitWidth + row.pad + card.borderRight
           height: card.borderTop + row.pad + line.implicitHeight + row.pad + card.borderBottom
-          color: Util.alpha(Color.popups.background, 0.92)
-          borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
+          color: Util.alpha(Commons.Color.popups.background, 0.92)
+          borderSpec: Border.surfaceSpec("popups", "border", Commons.Color.popups.border, Math.max(1, Style.space(2)))
           radius: Style.cornerRadius
 
           Row {
@@ -151,15 +152,15 @@ PanelWindow {
                   width: Math.max(height, capText.implicitWidth + Style.space(14) * panel.scale)
                   height: Math.round(Style.space(30) * panel.scale)
                   radius: Math.min(Style.cornerRadius, Style.space(6))
-                  color: Util.alpha(Color.popups.text, isMod ? 0.10 : 0.16)
+                  color: Util.alpha(Commons.Color.popups.text, isMod ? 0.10 : 0.16)
                   border.width: 1
-                  border.color: Util.alpha(Color.popups.text, 0.45)
+                  border.color: Util.alpha(Commons.Color.popups.text, 0.45)
                   Rectangle {
                     anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
                     anchors.margins: 1
                     height: Style.space(3)
                     radius: parent.radius
-                    color: Util.alpha(Color.popups.text, 0.25)
+                    color: Util.alpha(Commons.Color.popups.text, 0.25)
                   }
                   Text {
                     id: capText
@@ -167,7 +168,7 @@ PanelWindow {
                     anchors.verticalCenterOffset: -1
                     textFormat: Text.PlainText
                     text: modelData
-                    color: Color.popups.text
+                    color: Commons.Color.popups.text
                     font.family: Style.font.family
                     font.pixelSize: Math.round(Style.font.title * panel.scale)
                     font.bold: true
@@ -181,7 +182,7 @@ PanelWindow {
                   anchors.verticalCenter: cap.verticalCenter
                   textFormat: Text.PlainText
                   text: "+"
-                  color: Util.alpha(Color.popups.text, 0.6)
+                  color: Util.alpha(Commons.Color.popups.text, 0.6)
                   font.family: Style.font.family
                   font.pixelSize: Math.round(Style.font.body * panel.scale)
                 }
@@ -193,7 +194,7 @@ PanelWindow {
               anchors.verticalCenter: parent.verticalCenter
               textFormat: Text.PlainText
               text: "×" + row.count
-              color: Util.alpha(Color.popups.text, 0.75)
+              color: Util.alpha(Commons.Color.popups.text, 0.75)
               font.family: Style.font.family
               font.pixelSize: Math.round(Style.font.body * panel.scale)
               font.bold: true
