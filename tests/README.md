@@ -8,6 +8,8 @@ The desktop tier additionally needs Quickshell, Qt Quick, rsync, jq, the actual 
 
 The capture harness requires zero subprocess exit, a completion marker, and no script errors or binding loops. The composition harness stages exactly the installer allowlist and checks local imports. It uses actual host UI components, but temporary test copies substitute FloatingWindow for native layer-shell windows because offscreen Qt has no PanelWindow backend. It cannot establish native input masks, IPC-server availability, focus/lock ordering, or screenshot equivalence. Known offscreen socket/mask messages are tolerated; script errors are not.
 
+Failed-launch lifecycle cases distinguish a missing executable (`QProcess::FailedToStart`, which has no `exited` signal) from a command returning nonzero. They check both startup failure and recovery into a fresh capture session. The composition harness also checks an instantiated keycap's foreground against `Commons.Color.popups.text`, catching collisions with the `QtQuick.Color` singleton introduced in Qt 6.12.
+
 The entry lifecycle test uses a synthetic producer to check the panel entry's `open()`, `close()`, and `opened` contract, including repeated summon/hide, a visible pause prompt, reopening, and transport cleanup.
 
 Before release, run a native desktop smoke test with synthetic, nonsecret input: toggle via keyboard/panel/IPC, cancel startup, test both display orders and repeated strokes, every placement/size, focused/all/disconnected monitors and hotplug, privacy/focus clear, click-through strokes, clickable sudo pause and explicit resume, actual polkit mapping, lock/unlock, and failed configuration/save recovery. Record host versions and screenshots. This refactor has not performed that live-desktop test.

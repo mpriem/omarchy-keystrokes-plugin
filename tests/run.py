@@ -73,13 +73,18 @@ with tempfile.TemporaryDirectory(prefix='keystrokes-test.') as temporary:
     shutil.copyfile('tests/shell.qml', harness / 'shell.qml')
     shutil.copyfile('tests/lifecycle.qml', harness / 'lifecycle.qml')
     shutil.copyfile('tests/settings.qml', harness / 'settings.qml')
-    lifecycle_modes = ['cancel-create', 'cancel-start', 'restart', 'config-start', 'late', 'batch', 'start-timeout', 'stop-fail', 'stop-timeout', 'destroy', 'destroy-create', 'cleanup-fail', 'ack-fail', 'watch-retry']
+    lifecycle_modes = ['spawn-fail', 'spawn-retry', 'cancel-create', 'cancel-start', 'restart', 'config-start', 'late', 'batch', 'start-timeout', 'stop-fail', 'stop-timeout', 'destroy', 'destroy-create', 'cleanup-fail', 'ack-fail', 'watch-retry']
+    quickshell = shutil.which('qs')
     for mode in ['settings'] + lifecycle_modes + ['normal', 'stalled', 'sudo', 'polkit', 'custom', 'unbound', 'reload']:
         test_env = dict(env, PATH=str(bin_dir) + ':' + os.environ['PATH'], QT_QPA_PLATFORM='offscreen',
                         QT_QPA_PLATFORMTHEME='generic', QT_STYLE_OVERRIDE='Fusion', QT_QUICK_BACKEND='software',
                         DISPLAY='', DBUS_SESSION_BUS_ADDRESS='unix:path=/nonexistent', TEST_MODE=mode, XDG_CACHE_HOME=str(runtime / 'cache'), XDG_CONFIG_HOME=str(runtime / 'config'),
                         HOME=temporary, HYPRLAND_INSTANCE_SIGNATURE='isolated-test', WAYLAND_DISPLAY='invalid-test')
-        result = subprocess.run(['qs', '--no-color', '-p', str(harness / ('settings.qml' if mode == 'settings' else 'lifecycle.qml' if mode in lifecycle_modes else 'shell.qml'))], env=test_env, text=True, capture_output=True, timeout=12)
+        if mode == 'spawn-fail':
+            # No hyprctl or bash: exercise QProcess::FailedToStart, not an
+            # executable returning nonzero. Quickshell itself uses its full path.
+            test_env['PATH'] = str(runtime / 'missing-bin')
+        result = subprocess.run([quickshell, '--no-color', '-p', str(harness / ('settings.qml' if mode == 'settings' else 'lifecycle.qml' if mode in lifecycle_modes else 'shell.qml'))], env=test_env, text=True, capture_output=True, timeout=12)
         output = result.stdout + result.stderr
         assert result.returncode == 0, output
         assert not any(message in output for message in ['ReferenceError:', 'TypeError:', 'Error: ', 'Binding loop detected']), output
@@ -90,7 +95,7 @@ with tempfile.TemporaryDirectory(prefix='keystrokes-test.') as temporary:
                 if not list(runtime.glob('omarchy-keystrokes.*')): break
                 time.sleep(.05)
         assert not list(runtime.glob('omarchy-keystrokes.*')), 'session files retained'
-        if mode == 'settings':
+        if mode in ['settings', 'spawn-fail']:
             (runtime / 'hyprctl-calls').unlink(missing_ok=True)
             continue
         calls = (runtime / 'hyprctl-calls').read_text().splitlines()
